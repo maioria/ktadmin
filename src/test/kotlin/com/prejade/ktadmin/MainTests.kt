@@ -3,7 +3,7 @@ package com.prejade.ktadmin
 import com.prejade.ktadmin.modules.main.service.MainService
 import com.prejade.ktadmin.modules.sys.model.AddUser
 import com.prejade.ktadmin.modules.sys.service.SysUserService
-import com.prejade.ktadmin.prejade.sys.InitDataComponent
+import com.prejade.ktadmin.sys.InitDataComponent
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest

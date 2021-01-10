@@ -10,13 +10,14 @@ import java.sql.Timestamp
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import java.io.IOException
-
-import java.io.FileNotFoundException
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.ClassPathResource
+import java.io.*
+import java.lang.Exception
+import java.net.InetAddress
+import java.net.UnknownHostException
 
 
 /**
@@ -24,9 +25,31 @@ import org.springframework.core.io.ClassPathResource
  *
  */
 object FileUtils {
+    val SYS_TEM_DIR = System.getProperty("java.io.tmpdir") + File.separator
     fun getExt(fileName: String): String {
         val splits = fileName.split(".")
         return splits.last()
+    }
+
+    /**
+     * inputStream 转 File
+     */
+    @Throws(Exception::class)
+    fun inputStreamToFile(ins: InputStream, name: String): File {
+        val file: File = File(SYS_TEM_DIR + name)
+        if (file.exists()) {
+            return file
+        }
+        val os: OutputStream = FileOutputStream(file)
+        var bytesRead: Int
+        val len = 8192
+        val buffer = ByteArray(len)
+        while (ins.read(buffer, 0, len).also { bytesRead = it } != -1) {
+            os.write(buffer, 0, bytesRead)
+        }
+        os.close()
+        ins.close()
+        return file
     }
 }
 
@@ -55,8 +78,33 @@ object DateUtils {
 }
 
 object ServletUtils {
+    val logger: Logger = LoggerFactory.getLogger(javaClass)
     fun getIp(request: HttpServletRequest): String? {
-        return request.getHeader("x-forwarded-for") ?: request.remoteAddr
+        val unknown = "unknown"
+        var ip = request.getHeader("x-forwarded-for")
+        if (ip == null || ip.isEmpty() || unknown.equals(ip, ignoreCase = true)) {
+            ip = request.getHeader("Proxy-Client-IP")
+        }
+        if (ip == null || ip.isEmpty() || unknown.equals(ip, ignoreCase = true)) {
+            ip = request.getHeader("WL-Proxy-Client-IP")
+        }
+        if (ip == null || ip.isEmpty() || unknown.equals(ip, ignoreCase = true)) {
+            ip = request.remoteAddr
+        }
+        val comma = ","
+        val localhost = "127.0.0.1"
+        if (ip!!.contains(comma)) {
+            ip = ip.split(",").toTypedArray()[0]
+        }
+        if (localhost == ip) {
+            // 获取本机真正的ip地址
+            try {
+                ip = InetAddress.getLocalHost().hostAddress
+            } catch (e: UnknownHostException) {
+                logger.error(e.message, e)
+            }
+        }
+        return ip
     }
 
     fun getBrowser(request: HttpServletRequest): String? {
@@ -93,6 +141,7 @@ object Ip2Region {
     private val logger: Logger = LoggerFactory.getLogger(Ip2Region::class.java.name)
 
     fun parseIp(ip: String?): String? {
+        if (ip == null) return null
         val isIpAddress = Util.isIpAddress(ip)
         if (isIpAddress) {
             try {
@@ -105,10 +154,11 @@ object Ip2Region {
     }
 
     init {
-        val dbfile = "classpath:ip2region/ip2region.db"
+        val dbFile = "ip2region/ip2region.db"
+        val name = "ip2region.db"
         try {
             config = DbConfig()
-            searcher = DbSearcher(config, ClassPathResource(dbfile).path)
+            searcher = DbSearcher(config, FileUtils.inputStreamToFile(ClassPathResource(dbFile).inputStream, name).path)
         } catch (e: DbMakerConfigException) {
             logger.warn("ip2region config init exception:" + e.message)
         } catch (e: FileNotFoundException) {

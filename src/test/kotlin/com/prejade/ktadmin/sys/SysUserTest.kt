@@ -1,4 +1,4 @@
-package com.prejade.ktadmin.prejade.sys
+package com.prejade.ktadmin.sys
 
 import com.prejade.ktadmin.modules.sys.model.AddPermission
 import com.prejade.ktadmin.modules.sys.model.AddRole
