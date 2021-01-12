@@ -17,7 +17,7 @@ class SysUser() {
     lateinit var username: String
 
     @Column(nullable = false)
-    lateinit var name: String
+    lateinit var nickName: String
 
     @Column(nullable = false)
     lateinit var salt: String

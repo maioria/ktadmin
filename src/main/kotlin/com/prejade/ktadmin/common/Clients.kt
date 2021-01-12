@@ -22,6 +22,8 @@ interface CacheClient {
 
     fun getKeys(): Set<String>
 
+    fun getKeysByPrefix(prefix: String): Set<String>
+
     fun empty()
 }
 
@@ -33,11 +35,19 @@ class BaseCacheClient : CacheClient {
     private val map: ConcurrentHashMap<String, String> = ConcurrentHashMap()
     override fun set(key: String, value: String, expire: Long) {
         map[key] = value
-        map[key + "_HoldTime"] = (System.currentTimeMillis() + expire).toString()
+        map[getHoldTimeKey(key)] = (System.currentTimeMillis() + expire).toString()
     }
 
     override fun getKeys(): Set<String> {
         return map.keys
+    }
+
+    override fun getKeysByPrefix(prefix: String): Set<String> {
+        val result = mutableSetOf<String>()
+        for (key in getKeys().filter { it.startsWith(prefix) && map[it] != null }) {
+            result.add(key)
+        }
+        return result
     }
 
     override fun get(key: String): String? {
@@ -61,7 +71,7 @@ class BaseCacheClient : CacheClient {
      */
     private fun remove(cacheName: String) {
         map.remove(cacheName)
-        map.remove(cacheName + "_HoldTime")
+        map.remove(getHoldTimeKey(cacheName))
     }
 
     /**
@@ -72,7 +82,7 @@ class BaseCacheClient : CacheClient {
      * @return
      */
     private fun checkCacheName(cacheName: String): Boolean {
-        val cacheHoldTime = map[cacheName + "_HoldTime"]?.toLong()
+        val cacheHoldTime = map[getHoldTimeKey(cacheName)]?.toLong()
         if (cacheHoldTime == null || cacheHoldTime == 0L) {
             return false
         }
@@ -81,6 +91,10 @@ class BaseCacheClient : CacheClient {
             return false
         }
         return true
+    }
+
+    private fun getHoldTimeKey(key: String): String {
+        return "_${key}_HoldTime"
     }
 
 }

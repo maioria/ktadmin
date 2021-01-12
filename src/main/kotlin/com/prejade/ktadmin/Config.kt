@@ -5,7 +5,6 @@ import com.google.code.kaptcha.util.Config
 import com.prejade.ktadmin.common.BaseCacheClient
 import com.prejade.ktadmin.common.CacheClient
 import com.prejade.ktadmin.interceptors.OnlineInterceptor
-import com.prejade.ktadmin.interceptors.TokenInterceptor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -17,14 +16,9 @@ import java.util.*
 @Configuration
 class WebConfig : WebMvcConfigurer {
     @Autowired
-    lateinit var tokenInterceptor: TokenInterceptor
-
-    @Autowired
     lateinit var onlineInterceptor: OnlineInterceptor
 
     override fun addInterceptors(registry: InterceptorRegistry) {
-        registry.addInterceptor(tokenInterceptor).addPathPatterns("/**")
-            .excludePathPatterns(*SysConstant.getNotLoginUrls())
         registry.addInterceptor(onlineInterceptor).addPathPatterns("/**")
             .excludePathPatterns(*SysConstant.getNotLoginUrls())
     }

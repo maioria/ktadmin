@@ -7,6 +7,7 @@ import com.prejade.ktadmin.SecurityUtils
 import com.prejade.ktadmin.common.HttpResult
 import com.prejade.ktadmin.common.ServletUtils
 import com.prejade.ktadmin.modules.main.service.MainService
+import com.prejade.ktadmin.modules.sys.service.OnlineUserService
 import org.springframework.web.bind.annotation.*
 import javax.imageio.ImageIO
 import javax.servlet.http.HttpServletRequest
@@ -16,7 +17,8 @@ import javax.validation.constraints.NotBlank
 @RestController
 @RequestMapping("auth")
 class AuthRest(
-    val mainService: MainService
+    private val mainService: MainService,
+    private val onlineUserService: OnlineUserService
 ) {
     @PostMapping("2step-code")
     fun twoStepCode(): HttpResult {
@@ -25,10 +27,7 @@ class AuthRest(
 
     @PostMapping("logout")
     fun logout(request: HttpServletRequest): HttpResult {
-        val username = SecurityUtils.getLoginUser()?.username
-        if (username != null) mainService.removeLoginToken(username)
-        val token = JwtTokenUtils.getToken(request)
-        if (token != null) mainService.clearOnlineToken(token)
+        onlineUserService.removeOnlineUser(JwtTokenUtils.getToken(request)!!)
         return HttpResult.ok(true)
     }
 
@@ -40,22 +39,19 @@ class AuthRest(
             if (sessionCaptcha == null || loginDto.captcha === null) return HttpResult.ok("请输入验证码")
             if (loginDto.captcha !== sessionCaptcha) return HttpResult.ok("验证码不正确")
         }
-        return when {
-            mainService.disabled(loginDto.username) -> {
-                HttpResult.ok("用户已被冻结")
-            }
-            mainService.login(loginDto.username, loginDto.password, ServletUtils.getIp(request)) -> {
-                val token = mainService.initToken(request, loginDto.username, loginDto.password)
-                mainService.setLoginToken(loginDto.username, token)
-                mainService.setOnlineToken(token)
-                HttpResult.ok(TokenResult(token))
-            }
-            else -> {
-                var errorCount = errorCountStr?.toString()?.toInt() ?: 1
-                errorCount++
-                request.session.setAttribute("errorCount", errorCount)
-                HttpResult.ok("帐号/密码不正确")
-            }
+
+        if (mainService.disabled(loginDto.username)) return HttpResult.ok("用户已被冻结")
+
+        val user = mainService.login(loginDto.username, loginDto.password, ServletUtils.getIp(request))
+        return if (user == null) {
+            var errorCount = errorCountStr?.toString()?.toInt() ?: 1
+            errorCount++
+            request.session.setAttribute("errorCount", errorCount)
+            HttpResult.ok("帐号/密码不正确")
+        } else {
+            val token = mainService.initToken(request, loginDto.username, loginDto.password)
+            onlineUserService.addOnlineUser(user, token, request)
+            HttpResult.ok(TokenResult(token))
         }
     }
 

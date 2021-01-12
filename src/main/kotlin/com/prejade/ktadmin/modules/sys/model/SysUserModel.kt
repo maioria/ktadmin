@@ -1,9 +1,13 @@
 package com.prejade.ktadmin.modules.sys.model
 
+import com.prejade.ktadmin.common.DateUtils
+import com.prejade.ktadmin.common.EncryptUtils
+import java.util.*
+
 class SysUserModel {
     var id: Int? = null
     lateinit var username: String
-    lateinit var name: String
+    lateinit var nickName: String
     var mobile: String? = null
     var email: String? = null
     var tel: String? = null
@@ -51,4 +55,18 @@ class ExistUser {
     lateinit var mobile: String
     var tel: String? = null
     var email: String? = null
+}
+
+class OnlineUser {
+    var id: Int? = null
+    lateinit var username: String
+    var nickName: String? = null
+    var dept: String? = null
+    var browser: String? = null
+    var ip: String? = null
+    var address: String? = null
+    var key: String? = null
+    var loginTime: Date = DateUtils.getCurrentTime()
+    lateinit var token: String
+    var encryptToken: String? = null
 }

@@ -12,10 +12,20 @@ class ConfigConstant {
 
 
 object SysConstant {
+    /**
+     * 在线用户的key
+     */
     fun getOnlineUserKey(token: String): String {
-        return "online_user_key_$token"
+        return "${getOnlineUserKeyPrefix()}$token"
     }
 
+    fun getOnlineUserKeyPrefix(): String {
+        return "online_user_key_"
+    }
+
+    /**
+     * 登录用户的用户名下的token，每一个新的用户登录都会进行更新
+     */
     fun getLoginTokenKey(username: String): String {
         return "login_user_$username"
     }

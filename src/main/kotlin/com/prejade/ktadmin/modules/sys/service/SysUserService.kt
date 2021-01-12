@@ -114,7 +114,7 @@ class SysUserService(
 
     fun updAccount(id: Int, account: UpdAccount) {
         val entity = get(id)
-        entity.name = account.name
+        entity.nickName = account.name
         entity.mobile = account.mobile
         entity.tel = account.tel
         entity.email = account.email

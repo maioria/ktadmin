@@ -16,8 +16,15 @@ import org.slf4j.LoggerFactory
 import org.springframework.core.io.ClassPathResource
 import java.io.*
 import java.lang.Exception
+import java.lang.StringBuilder
 import java.net.InetAddress
 import java.net.UnknownHostException
+import java.nio.charset.StandardCharsets
+import javax.crypto.Cipher
+import javax.crypto.SecretKey
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.DESKeySpec
+import javax.crypto.spec.IvParameterSpec
 
 
 /**
@@ -164,5 +171,77 @@ object Ip2Region {
         } catch (e: FileNotFoundException) {
             logger.warn("ip2region file not found" + e.message)
         }
+    }
+}
+
+object EncryptUtils {
+    private const val STR_PARAM = "drgd@fd34#@!"
+    private var cipher: Cipher? = null
+    private val IV = IvParameterSpec(STR_PARAM.toByteArray(StandardCharsets.UTF_8))
+
+    @Throws(Exception::class)
+    private fun getDesKeySpec(source: String?): DESKeySpec? {
+        if (source == null || source.length == 0) {
+            return null
+        }
+        cipher = Cipher.getInstance("DES/CBC/PKCS5Padding")
+        val strKey = "Passw0rd"
+        return DESKeySpec(strKey.toByteArray(StandardCharsets.UTF_8))
+    }
+
+    /**
+     * 对称加密
+     */
+    @Throws(Exception::class)
+    fun desEncrypt(source: String): String {
+        val desKeySpec = getDesKeySpec(source)
+        val keyFactory = SecretKeyFactory.getInstance("DES")
+        val secretKey = keyFactory.generateSecret(desKeySpec)
+        cipher!!.init(Cipher.ENCRYPT_MODE, secretKey, IV)
+        return byte2hex(
+            cipher!!.doFinal(source.toByteArray(StandardCharsets.UTF_8))
+        ).toUpperCase()
+    }
+
+    /**
+     * 对称解密
+     */
+    @Throws(Exception::class)
+    fun desDecrypt(source: String): String {
+        val src = hex2byte(source.toByteArray(StandardCharsets.UTF_8))
+        val desKeySpec = getDesKeySpec(source)
+        val keyFactory = SecretKeyFactory.getInstance("DES")
+        val secretKey = keyFactory.generateSecret(desKeySpec)
+        cipher!!.init(Cipher.DECRYPT_MODE, secretKey, IV)
+        val retByte = cipher!!.doFinal(src)
+        return String(retByte)
+    }
+
+    private fun byte2hex(inStr: ByteArray): String {
+        var stmp: String
+        val out = StringBuilder(inStr.size * 2)
+        for (b in inStr) {
+            stmp = Integer.toHexString(b.toInt() and 0xFF)
+            if (stmp.length == 1) {
+                // 如果是0至F的单位字符串，则添加0
+                out.append("0").append(stmp)
+            } else {
+                out.append(stmp)
+            }
+        }
+        return out.toString()
+    }
+
+    private fun hex2byte(b: ByteArray): ByteArray {
+        val size = 2
+        require(b.size % size == 0) { "长度不是偶数" }
+        val b2 = ByteArray(b.size / 2)
+        var n = 0
+        while (n < b.size) {
+            val item = String(b, n, 2)
+            b2[n / 2] = item.toInt(16).toByte()
+            n += size
+        }
+        return b2
     }
 }
