@@ -1,11 +1,7 @@
-package com.prejade.ktadmin.common
+package com.prejade.ktadmin.clients
 
 import java.util.concurrent.ConcurrentHashMap
 
-/**
- * @author tao
- *
- */
 interface CacheClient {
     fun set(key: String, value: String) {
         this.set(key, value, 1000 * 60 * 60 * 24)
@@ -29,7 +25,9 @@ interface CacheClient {
 
 /**
  * 基于内存的实现，不可以使用多例负载
- * 如果设置了时间，过期后资源并不会释放！！
+ * 如果设置了时间，过期后资源并不会释放，只有查询下才行
+ *
+ * 如果需要负载或者更多功能的，请使用redis实现
  */
 class BaseCacheClient : CacheClient {
     private val map: ConcurrentHashMap<String, String> = ConcurrentHashMap()

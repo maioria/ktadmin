@@ -1,11 +1,10 @@
-package com.prejade.ktadmin.modules.main.service
+package com.prejade.ktadmin.modules.sys.service
 
 import com.prejade.ktadmin.PasswordUtils
 import com.prejade.ktadmin.SecurityUtils
 import com.prejade.ktadmin.common.Status
 import com.prejade.ktadmin.modules.sys.entity.SysUser
 import com.prejade.ktadmin.modules.sys.model.SysUserModel
-import com.prejade.ktadmin.modules.sys.service.OnlineUserService
 import com.prejade.ktadmin.modules.sys.service.SysUserService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.stereotype.Service
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletRequest
 @Service
 class MainService(
     private val sysUserService: SysUserService,
-    private val onlineUserService: OnlineUserService,
     private val authenticationManager: AuthenticationManager
 ) {
     /**

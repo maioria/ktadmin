@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.ClassPathResource
+import org.springframework.util.ObjectUtils
 import java.io.*
 import java.lang.Exception
 import java.lang.StringBuilder
@@ -32,7 +33,7 @@ import javax.crypto.spec.IvParameterSpec
  *
  */
 object FileUtils {
-    val SYS_TEM_DIR = System.getProperty("java.io.tmpdir") + File.separator
+    private val SYS_TEM_DIR = System.getProperty("java.io.tmpdir") + File.separator
     fun getExt(fileName: String): String {
         val splits = fileName.split(".")
         return splits.last()
@@ -43,7 +44,7 @@ object FileUtils {
      */
     @Throws(Exception::class)
     fun inputStreamToFile(ins: InputStream, name: String): File {
-        val file: File = File(SYS_TEM_DIR + name)
+        val file = File(SYS_TEM_DIR + name)
         if (file.exists()) {
             return file
         }
@@ -85,7 +86,7 @@ object DateUtils {
 }
 
 object ServletUtils {
-    val logger: Logger = LoggerFactory.getLogger(javaClass)
+    private val logger: Logger = LoggerFactory.getLogger(javaClass)
     fun getIp(request: HttpServletRequest): String? {
         val unknown = "unknown"
         var ip = request.getHeader("x-forwarded-for")
@@ -100,11 +101,12 @@ object ServletUtils {
         }
         val comma = ","
         val localhost = "127.0.0.1"
+        if (ObjectUtils.nullSafeEquals("0:0:0:0:0:0:0:1", ip)) ip = localhost
+
         if (ip!!.contains(comma)) {
             ip = ip.split(",").toTypedArray()[0]
         }
         if (localhost == ip) {
-            // 获取本机真正的ip地址
             try {
                 ip = InetAddress.getLocalHost().hostAddress
             } catch (e: UnknownHostException) {
@@ -152,7 +154,13 @@ object Ip2Region {
         val isIpAddress = Util.isIpAddress(ip)
         if (isIpAddress) {
             try {
-                return searcher!!.btreeSearch(ip)?.region
+                val region = searcher!!.btreeSearch(ip)?.region ?: return null
+                var address = region.replace("0|", "")
+                val symbol = '|'
+                if (address[address.length - 1] == symbol) {
+                    address = address.substring(0, address.length - 1)
+                }
+                return if (address == "内网IP|内网IP") "内网IP" else address
             } catch (e: IOException) {
                 logger.warn("ip2region parse error" + e.message)
             }
@@ -175,18 +183,17 @@ object Ip2Region {
 }
 
 object EncryptUtils {
-    private const val STR_PARAM = "drgd@fd34#@!"
+    private const val STR_PARAM = "drgd@fd3"
     private var cipher: Cipher? = null
     private val IV = IvParameterSpec(STR_PARAM.toByteArray(StandardCharsets.UTF_8))
 
     @Throws(Exception::class)
     private fun getDesKeySpec(source: String?): DESKeySpec? {
-        if (source == null || source.length == 0) {
+        if (source == null || source.isEmpty()) {
             return null
         }
         cipher = Cipher.getInstance("DES/CBC/PKCS5Padding")
-        val strKey = "Passw0rd"
-        return DESKeySpec(strKey.toByteArray(StandardCharsets.UTF_8))
+        return DESKeySpec(STR_PARAM.toByteArray(StandardCharsets.UTF_8))
     }
 
     /**
@@ -243,5 +250,18 @@ object EncryptUtils {
             n += size
         }
         return b2
+    }
+}
+
+object ThrowableUtils {
+    /**
+     * 获取堆栈信息
+     */
+    fun getStackTrace(throwable: Throwable): String {
+        val sw = StringWriter()
+        PrintWriter(sw).use { pw ->
+            throwable.printStackTrace(pw)
+            return sw.toString()
+        }
     }
 }

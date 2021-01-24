@@ -1,13 +1,13 @@
-package com.prejade.ktadmin.modules.sys.service
+package com.prejade.ktadmin.modules.monitor.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.prejade.ktadmin.JwtTokenUtils
 import com.prejade.ktadmin.SysConstant
+import com.prejade.ktadmin.clients.CacheClient
 import com.prejade.ktadmin.common.*
+import com.prejade.ktadmin.modules.monitor.model.OnlineUserModel
 import com.prejade.ktadmin.modules.sys.entity.SysUser
-import com.prejade.ktadmin.modules.sys.model.OnlineUser
 import org.springframework.stereotype.Service
-import java.util.*
 import javax.servlet.http.HttpServletRequest
 
 /**
@@ -23,7 +23,7 @@ class OnlineUserService(
      */
     fun addOnlineUser(user: SysUser, token: String, request: HttpServletRequest) {
         val ip = ServletUtils.getIp(request)
-        val onlineUser = OnlineUser()
+        val onlineUser = OnlineUserModel()
         onlineUser.id = user.id
         onlineUser.username = user.username
         onlineUser.nickName = user.nickName
@@ -43,33 +43,35 @@ class OnlineUserService(
         return cacheClient.get(SysConstant.getOnlineUserKey(token)) != null
     }
 
-    fun getOnlineUserByKey(key: String): OnlineUser? {
+    fun getOnlineUserByKey(key: String): OnlineUserModel? {
         val value = cacheClient.get(key) ?: return null
-        return objectMapper.readValue(value, OnlineUser::class.java)
+        return objectMapper.readValue(value, OnlineUserModel::class.java)
     }
 
     fun removeOnlineUser(token: String) {
         cacheClient.del(SysConstant.getOnlineUserKey(token))
     }
 
-    fun pageData(pageNo: Int, pageSize: Int): PageModel<OnlineUser> {
-        val result = PageModel<OnlineUser>()
+    fun pageData(pageNo: Int, pageSize: Int, keyword: String?): PageModel<OnlineUserModel> {
+        val result = PageModel<OnlineUserModel>()
         result.pageNo = pageNo
         result.pageSize = pageSize
-        val list = mutableListOf<OnlineUser>()
+        val list = mutableListOf<OnlineUserModel>()
         val onlineKeys = cacheClient.getKeysByPrefix(SysConstant.getOnlineUserKeyPrefix())
+        onlineKeys.filter { cacheClient.get(it) != null && cacheClient.get(it)!!.contains(it) }
         result.total = onlineKeys.size.toLong()
         for (key in onlineKeys) {
             val user = getOnlineUserByKey(key) ?: continue
             list.add(user)
         }
         list.sortByDescending { it.loginTime }
+
         val fromIndex = (pageNo - 1) * pageSize
         var toIndex = pageNo * pageSize
         if (toIndex > list.size) toIndex = list.size
         result.data = list.subList(fromIndex, toIndex)
         //加入加密的token
-        for (online in result.data as MutableList<OnlineUser>) {
+        for (online in result.data as MutableList<OnlineUserModel>) {
             online.token = EncryptUtils.desEncrypt(online.token)
         }
         return result

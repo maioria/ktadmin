@@ -3,26 +3,29 @@ package com.prejade.ktadmin.aspect
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.prejade.ktadmin.annotation.Log
 import com.prejade.ktadmin.SecurityUtils
-import com.prejade.ktadmin.common.Ip2Region
-import com.prejade.ktadmin.common.ServletUtils
-import com.prejade.ktadmin.common.StringUtils
+import com.prejade.ktadmin.common.*
 import com.prejade.ktadmin.modules.sys.model.MethodLogModel
 import com.prejade.ktadmin.modules.sys.service.SysLogService
+import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.ProceedingJoinPoint
+import org.aspectj.lang.annotation.AfterThrowing
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.annotation.Pointcut
 import org.aspectj.lang.reflect.MethodSignature
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import java.lang.reflect.Method
 import java.util.ArrayList
+import javax.servlet.http.HttpServletRequest
 
 @Component
 @Aspect
-class LogAspect2(private val service: SysLogService, private val objectMapper: ObjectMapper) {
-
+class LogAspect(private val service: SysLogService, private val objectMapper: ObjectMapper) {
+    val logger: Logger = LoggerFactory.getLogger(javaClass)
     var currentTime = ThreadLocal<Long>()
 
     @Pointcut("@annotation(com.prejade.ktadmin.annotation.Log)")
@@ -31,26 +34,47 @@ class LogAspect2(private val service: SysLogService, private val objectMapper: O
 
     @Around("logPointcut()")
     fun logAround(joinPoint: ProceedingJoinPoint): Any {
-        val model = MethodLogModel()
         currentTime.set(System.currentTimeMillis())
-        val result = joinPoint.proceed()
-        model.username = SecurityUtils.getLoginUser()?.username
-        model.time = System.currentTimeMillis() - currentTime.get()
-        currentTime.remove()
-        val request = ServletUtils.getHttpServletRequest()
-        model.ip = ServletUtils.getIp(request)
-        if (model.ip != null)
-            model.address = Ip2Region.parseIp(model.ip)
-        model.browser = ServletUtils.getBrowser(request)
         val signature = joinPoint.signature as MethodSignature
-        val method = signature.method
-        model.agent = request.getHeader("User-Agent")
-        model.method = joinPoint.target.javaClass.name + "." + signature.name + "()"
-        model.params = getParameter(method, joinPoint.args)
-        model.description = method.getAnnotation(Log::class.java).value
+        val model = MethodLogModel(
+            SecurityUtils.getLoginUser().username,
+            signature.method.getAnnotation(Log::class.java).value,
+            joinPoint.target.javaClass.name + "." + signature.name + "()",
+            getParameter(signature.method, joinPoint.args),
+            ServletUtils.getHttpServletRequest()
+        )
+
+        logger.debug("start:$model")
+        val result = joinPoint.proceed()
+        model.time = System.currentTimeMillis() - currentTime.get()
+        logger.debug("end:$model")
+
+        currentTime.remove()
         service.methodLogSave(model)
         return result
     }
+
+//    /**
+//     * 配置异常通知
+//     *
+//     * @param joinPoint join point for advice
+//     * @param e exception
+//     */
+//    @AfterThrowing(pointcut = "logPointcut()", throwing = "e")
+//    fun logAfterThrowing(joinPoint: JoinPoint, e: Throwable) {
+//        val signature = joinPoint.signature as MethodSignature
+//        val model = MethodLogModel(
+//            SecurityUtils.getLoginUser().username,
+//            signature.method.getAnnotation(Log::class.java).value,
+//            joinPoint.target.javaClass.name + "." + signature.name + "()",
+//            getParameter(signature.method, joinPoint.args),
+//            ServletUtils.getHttpServletRequest()
+//        )
+//        model.exceptionDetail = ThrowableUtils.getStackTrace(e).toByteArray()
+//        currentTime.remove()
+//        logger.error(model.toString(), e)
+//        service.methodLogSave(model)
+//    }
 
     /**
      * 根据方法和传入的参数获取请求参数

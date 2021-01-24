@@ -1,6 +1,6 @@
 package com.prejade.ktadmin
 
-import com.prejade.ktadmin.modules.main.service.MainService
+import com.prejade.ktadmin.modules.sys.service.MainService
 import com.prejade.ktadmin.modules.sys.model.AddUser
 import com.prejade.ktadmin.modules.sys.service.SysUserService
 import com.prejade.ktadmin.sys.InitDataComponent

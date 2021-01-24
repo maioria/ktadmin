@@ -56,17 +56,3 @@ class ExistUser {
     var tel: String? = null
     var email: String? = null
 }
-
-class OnlineUser {
-    var id: Int? = null
-    lateinit var username: String
-    var nickName: String? = null
-    var dept: String? = null
-    var browser: String? = null
-    var ip: String? = null
-    var address: String? = null
-    var key: String? = null
-    var loginTime: Date = DateUtils.getCurrentTime()
-    lateinit var token: String
-    var encryptToken: String? = null
-}

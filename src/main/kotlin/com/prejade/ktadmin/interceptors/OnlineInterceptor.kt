@@ -2,8 +2,7 @@ package com.prejade.ktadmin.interceptors
 
 import com.prejade.ktadmin.JwtTokenUtils
 import com.prejade.ktadmin.common.ServletUtils
-import com.prejade.ktadmin.modules.main.service.MainService
-import com.prejade.ktadmin.modules.sys.service.OnlineUserService
+import com.prejade.ktadmin.modules.monitor.service.OnlineUserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component

@@ -2,8 +2,8 @@ package com.prejade.ktadmin
 
 import com.google.code.kaptcha.impl.DefaultKaptcha
 import com.google.code.kaptcha.util.Config
-import com.prejade.ktadmin.common.BaseCacheClient
-import com.prejade.ktadmin.common.CacheClient
+import com.prejade.ktadmin.clients.BaseCacheClient
+import com.prejade.ktadmin.clients.CacheClient
 import com.prejade.ktadmin.interceptors.OnlineInterceptor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
