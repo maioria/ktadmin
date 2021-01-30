@@ -26,7 +26,7 @@ class OnlineUserService(
         val onlineUser = OnlineUserModel()
         onlineUser.id = user.id
         onlineUser.username = user.username
-        onlineUser.nickName = user.nickName
+        onlineUser.nickname = user.nickname
         onlineUser.dept = user.dep.name
         onlineUser.ip = ip
         onlineUser.address = Ip2Region.parseIp(ip)

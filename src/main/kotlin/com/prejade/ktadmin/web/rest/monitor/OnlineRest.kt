@@ -1,4 +1,4 @@
-package com.prejade.ktadmin.rest.monitor
+package com.prejade.ktadmin.web.rest.monitor
 
 import com.prejade.ktadmin.common.HttpResult
 import com.prejade.ktadmin.modules.monitor.service.OnlineUserService

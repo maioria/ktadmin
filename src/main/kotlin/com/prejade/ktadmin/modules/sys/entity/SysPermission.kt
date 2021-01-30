@@ -19,7 +19,21 @@ class SysPermission {
     @Column(nullable = true)
     var type: SysPermissionType = SysPermissionType.MENU
 
+    /**
+     * 权限删除后，对应的权限与角色的关系也要删除
+     */
+    @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
+    var roles: List<SysRole> = arrayListOf()
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", nullable = true)
     var parent: SysPermission? = null
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.REFRESH])
+    @JoinTable(
+        name = "sys_role_permission",
+        joinColumns = [JoinColumn(name = "sys_permission_id")],
+        inverseJoinColumns = [JoinColumn(name = "sys_role_id")]
+    )
+    var permissions: List<SysRole> = ArrayList()
 }

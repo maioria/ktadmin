@@ -1,13 +1,9 @@
 package com.prejade.ktadmin.modules.sys.model
 
-import com.prejade.ktadmin.common.DateUtils
-import com.prejade.ktadmin.common.EncryptUtils
-import java.util.*
-
 class SysUserModel {
     var id: Int? = null
     lateinit var username: String
-    lateinit var nickName: String
+    lateinit var nickname: String
     var mobile: String? = null
     var email: String? = null
     var tel: String? = null

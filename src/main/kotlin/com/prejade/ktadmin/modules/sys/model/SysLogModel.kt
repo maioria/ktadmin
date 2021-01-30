@@ -2,7 +2,25 @@ package com.prejade.ktadmin.modules.sys.model
 
 import com.prejade.ktadmin.common.Ip2Region
 import com.prejade.ktadmin.common.ServletUtils
+import java.sql.Timestamp
 import javax.servlet.http.HttpServletRequest
+
+class SysLogModel {
+    var username: String? = null
+    var description: String? = null
+    var method: String? = null
+    var params: String? = null
+    var ip: String? = null
+    var agent: String? = null
+    var address: String? = null
+    var browser: String? = null
+    var time: Long? = null
+    var createTime: Timestamp? = null
+}
+
+class AddSysLogModel {
+
+}
 
 class MethodLogModel {
     constructor(

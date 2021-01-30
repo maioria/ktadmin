@@ -23,8 +23,10 @@ class MainService(
         val result = PasswordUtils.matches(password, sysUser.salt, sysUser.password)
         if (result) {
             sysUserService.refreshLoginInfo(sysUser, ip)
+            return sysUser
+        } else {
+            return null
         }
-        return sysUser
     }
 
     /**

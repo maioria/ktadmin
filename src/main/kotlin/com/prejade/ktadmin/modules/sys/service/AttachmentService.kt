@@ -44,26 +44,28 @@ class AttachmentService(val repository: AttachmentRepository, val constant: Conf
         return repository
     }
 
+    fun getFilePath(attachment: Attachment): String {
+        return constant.uploadPath + File.separator + attachment.module + File.separator + attachment.name
+    }
+
     fun saveFile(file: MultipartFile, module: String = "temp", objectId: String? = null): Attachment {
         val createTime = Date()
         val fileName = file.originalFilename
         val ext = FileUtils.getExt(fileName!!)
         val name = DigestUtils.md5DigestAsHex(("$createTime-$fileName").toByteArray()) + "." + ext
         val attachment = Attachment()
-        val relativePath = module + File.separator + name
-        val path = constant.uploadPath + File.separator + relativePath
         attachment.name = name
         attachment.ext = ext
         attachment.fileMd5 = DigestUtils.md5DigestAsHex(file.bytes)
         attachment.initName = fileName
-        attachment.path = relativePath
+        attachment.path = module
         attachment.size = file.size
         attachment.module = module
         attachment.objectId = objectId
 
         save(attachment)
 
-        val dest = File(path)
+        val dest = File(constant.uploadPath + File.separator + module + File.separator + name)
         dest.mkdirs()
         file.transferTo(dest)
 

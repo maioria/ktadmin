@@ -1,4 +1,4 @@
-package com.prejade.ktadmin.rest.sys
+package com.prejade.ktadmin.web.rest.sys
 
 import com.prejade.ktadmin.annotation.Log
 import com.prejade.ktadmin.common.HttpResult

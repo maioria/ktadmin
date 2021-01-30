@@ -1,9 +1,10 @@
-package com.prejade.ktadmin.rest.login
+package com.prejade.ktadmin.web.rest.login
 
 import com.google.code.kaptcha.Constants
 import com.google.code.kaptcha.Producer
 import com.prejade.ktadmin.JwtTokenUtils
 import com.prejade.ktadmin.SecurityUtils
+import com.prejade.ktadmin.annotation.Log
 import com.prejade.ktadmin.common.HttpResult
 import com.prejade.ktadmin.common.ServletUtils
 import com.prejade.ktadmin.modules.sys.service.MainService
@@ -25,6 +26,7 @@ class AuthRest(
         return HttpResult.ok(false)
     }
 
+    @Log("退出登录")
     @PostMapping("logout")
     fun logout(request: HttpServletRequest): HttpResult {
         onlineUserService.removeOnlineUser(JwtTokenUtils.getToken(request)!!)
@@ -78,7 +80,7 @@ class MainRest(
 ) {
     @GetMapping("user/info")
     fun info(): HttpResult {
-        val userId = SecurityUtils.getLoginUser()!!.id
+        val userId = SecurityUtils.getLoginUser().id
         return HttpResult.ok(mainService.getUserInfo(userId))
     }
 

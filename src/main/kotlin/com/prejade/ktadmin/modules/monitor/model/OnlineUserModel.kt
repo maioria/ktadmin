@@ -6,7 +6,7 @@ import java.util.*
 class OnlineUserModel {
     var id: Int? = null
     lateinit var username: String
-    var nickName: String? = null
+    var nickname: String? = null
     var dept: String? = null
     var browser: String? = null
     var ip: String? = null

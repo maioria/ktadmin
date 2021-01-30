@@ -6,9 +6,7 @@ import com.prejade.ktadmin.SecurityUtils
 import com.prejade.ktadmin.common.*
 import com.prejade.ktadmin.modules.sys.model.MethodLogModel
 import com.prejade.ktadmin.modules.sys.service.SysLogService
-import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.ProceedingJoinPoint
-import org.aspectj.lang.annotation.AfterThrowing
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.annotation.Pointcut
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import java.lang.reflect.Method
 import java.util.ArrayList
-import javax.servlet.http.HttpServletRequest
 
 @Component
 @Aspect

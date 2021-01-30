@@ -35,7 +35,7 @@ class SysUserConvert : BaseConvert<SysUser, SysUserModel, AddUser>() {
     }
 
     override fun copyProperties(ori: SysUser, tar: SysUser) {
-        ori.nickName = tar.nickName
+        ori.nickname = tar.nickname
         ori.mobile = tar.mobile
         ori.tel = tar.tel
         ori.email = tar.email

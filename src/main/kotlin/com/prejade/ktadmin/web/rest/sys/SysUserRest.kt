@@ -1,4 +1,4 @@
-package com.prejade.ktadmin.rest.sys
+package com.prejade.ktadmin.web.rest.sys
 
 import com.prejade.ktadmin.SecurityUtils
 import com.prejade.ktadmin.annotation.Log
@@ -57,7 +57,7 @@ class SysUserRest(val service: SysUserService) {
     fun list(depId: Int?, name: String?, status: String?, pageNo: Int?, pageSize: Int?): HttpResult {
         return HttpResult.ok(
             service.findList(
-                SecurityUtils.getLoginUser()!!.dataPermission,
+                SecurityUtils.getLoginUser().dataPermission,
                 depId,
                 name,
                 status,
