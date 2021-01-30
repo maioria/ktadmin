@@ -5,8 +5,7 @@ spring:
     name: ktadmin
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://39.105.66.37:3306/ktadmin?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
-    #    url: jdbc:mysql://localhost:3306/ktadmin?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/ktadmin?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
     username: root
     password: Zt_199196
   jpa:
