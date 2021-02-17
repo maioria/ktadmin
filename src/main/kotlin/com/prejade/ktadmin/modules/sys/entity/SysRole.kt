@@ -25,7 +25,7 @@ class SysRole {
         joinColumns = [JoinColumn(name = "sys_role_id")],
         inverseJoinColumns = [JoinColumn(name = "sys_permission_id")]
     )
-    var permissions: List<SysPermission> = ArrayList()
+    var permissions: Set<SysPermission> = setOf()
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -37,10 +37,14 @@ class SysRole {
         joinColumns = [JoinColumn(name = "sys_role_id")],
         inverseJoinColumns = [JoinColumn(name = "sys_dep_id")]
     )
-    var depDataPermission: List<SysDep> = ArrayList()
+    var depDataPermission: Set<SysDep> = setOf()
 
     @Transient
-    fun getDepIdDataPermission(): List<Int> {
-        return this.depDataPermission.map { it.id!! }
+    fun getDepIdDataPermission(): Set<Int> {
+        val result = mutableSetOf<Int>()
+        this.depDataPermission.forEach {
+            result.add(it.id!!)
+        }
+        return result
     }
 }

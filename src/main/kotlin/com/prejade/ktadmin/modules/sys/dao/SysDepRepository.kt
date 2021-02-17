@@ -18,7 +18,7 @@ interface SysDepRepository : BaseRepository<SysDep, Int> {
     @Query("select d from SysDep d where d.status='NORMAL'")
     override fun findAll(): List<SysDep>
 
-    fun findByIdIn(split: List<Int>): List<SysDep>
+    fun findByIdIn(split: List<Int>): Set<SysDep>
 
     @Query("select entity.id from SysDep entity where entity.status='NORMAL' and entity.fullPath like ?1")
     fun findIdByParentId(id: String): List<Int>

@@ -79,10 +79,6 @@ object DateUtils {
     fun getCurrentTime(): Date {
         return Date()
     }
-
-    fun getCurrentTimestamp(): Timestamp {
-        return Timestamp(getCurrentTime().time)
-    }
 }
 
 object ServletUtils {

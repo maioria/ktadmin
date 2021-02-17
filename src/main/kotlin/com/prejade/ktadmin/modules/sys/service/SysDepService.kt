@@ -1,6 +1,7 @@
 package com.prejade.ktadmin.modules.sys.service
 
 import com.prejade.ktadmin.common.BaseService
+import com.prejade.ktadmin.common.Status
 import com.prejade.ktadmin.common.StringUtils
 import com.prejade.ktadmin.modules.sys.dao.SysDepRepository
 import com.prejade.ktadmin.modules.sys.entity.SysDep
@@ -63,8 +64,22 @@ class SysDepService(
         save(dep)
     }
 
-    fun findByIds(ids: String): List<SysDep> {
-        if (StringUtils.isEmpty(ids)) return arrayListOf()
+    fun findByIds(ids: String): Set<SysDep> {
+        if (StringUtils.isEmpty(ids)) return setOf()
         return repository.findByIdIn(StringUtils.castIntList(ids))
     }
+
+    /**
+     * 部门冻结
+     * 冻结所有子部门与用户
+     */
+    fun disable(id: Int) {
+        val dep = get(id)
+        dep.status = Status.DISABLED
+        save(dep)
+    }
+
+    /**
+     * 部门恢复
+     */
 }

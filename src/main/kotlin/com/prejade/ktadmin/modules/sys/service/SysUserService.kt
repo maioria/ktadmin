@@ -132,4 +132,10 @@ class SysUserService(
         if (id != null && id == entity.id) return null
         return convert.castExistModel(entity)
     }
+
+    override fun del(id: Int) {
+        val entity = get(id)
+        entity.status = Status.DELETE
+        save(entity)
+    }
 }

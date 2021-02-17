@@ -18,10 +18,10 @@ class SysDep {
     lateinit var name: String
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id", nullable = true)
+    @JoinColumn(name = "parent_id")
     var parent: SysDep? = null
 
-    @Column(nullable = true, unique = true)
+    @Column(unique = true)
     var fullPath: String? = null
 
     @Column(nullable = false)

@@ -49,14 +49,13 @@ class SysRoleService(
 
     fun upd(id: Int, model: AddRole) {
         val entity = get(id)
-        if (entity.name == "admin") throw KtadminException("不可以编辑管理员")
         val tarEntity = convert.castEntity(model)
         convert.copyProperties(entity, tarEntity)
         save(entity)
     }
 
-    fun castLabels(names: List<String>): List<String> {
-        val result = mutableListOf<String>()
+    fun castLabels(names: Set<String>): Set<String> {
+        val result = mutableSetOf<String>()
         val data = findByNames(names)
         for (item in data) {
             result.add(item.label)
@@ -64,7 +63,7 @@ class SysRoleService(
         return result
     }
 
-    fun findByNames(names: List<String>): List<SysRole> {
+    fun findByNames(names: Collection<String>): Set<SysRole> {
         return repository.findByNameIn(names)
     }
 

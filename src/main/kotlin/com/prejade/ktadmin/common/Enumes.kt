@@ -18,6 +18,23 @@ enum class Status : BaseEnum {
     }
 }
 
+enum class LockedStatus : BaseEnum {
+    ACTIVE("正常"),
+    LOCKED("冻结");
+
+    override var nameValue: String
+    override var meaning: String? = null
+
+    constructor(nameValue: String) {
+        this.nameValue = nameValue
+    }
+
+    constructor(nameValue: String, meaning: String?) {
+        this.nameValue = nameValue
+        this.meaning = meaning
+    }
+}
+
 enum class ApproveStatus : BaseEnum {
     NOT("未审批"),
     APPROVED("审批通过"),

@@ -27,11 +27,7 @@ class SysRoleConvert : BaseConvert<SysRole, SysRoleModel, AddRole>() {
         model.id = entity.id
         model.name = entity.name
         model.label = entity.label
-        if (entity.name == "admin") {
-            model.permissions = permissionService.findAll().map { it.name }
-        } else {
-            model.permissions = entity.permissions.map { it.name }
-        }
+        model.permissions = entity.permissions.map { it.name }
         model.dataPermissionType = entity.dataPermissionType.name
         model.dataPermissionTypeName = entity.dataPermissionType.getNameValue()
         if (entity.dataPermissionType == RoleDataPermissionType.SETTING) {

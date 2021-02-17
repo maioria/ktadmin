@@ -9,7 +9,6 @@
 * 认证使用Spring Security、Jwt。
 * 主要实现了部门、用户、权限（功能、数据）的配置
 * web端基于vue-element-admin开发，地址 https://github.com/maioria/ktadmin-element-web
-
 ## 在线体验
 
 演示地址：

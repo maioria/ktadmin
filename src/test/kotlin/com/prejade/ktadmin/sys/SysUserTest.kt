@@ -25,7 +25,7 @@ class SysUserTest {
     fun add() {
         val model = AddUser()
         model.username = "admin"
-        model.name = "超级管理员"
+        model.nickname = "超级管理员"
         model.depId = 1
         model.roles = "1"
         model.email = "prejade@163.com"

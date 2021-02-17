@@ -1,4 +1,4 @@
-package com.prejade.ktadmin.web.rest.sys
+package com.prejade.ktadmin.rest.sys
 
 import com.google.gson.JsonObject
 import com.prejade.ktadmin.modules.sys.service.AttachmentService

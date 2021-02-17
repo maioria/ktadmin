@@ -1,14 +1,18 @@
 package com.prejade.ktadmin.modules.sys.entity
 
 import com.prejade.ktadmin.common.DateUtils
+import com.prejade.ktadmin.common.LockedStatus
 import com.prejade.ktadmin.common.Status
+import com.prejade.ktadmin.modules.sys.enumes.LeaveStatus
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
 import java.sql.Timestamp
 import java.util.*
 import javax.persistence.*
 import kotlin.collections.ArrayList
 
 @Entity
-class SysUser() {
+class SysUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
@@ -26,7 +30,7 @@ class SysUser() {
     lateinit var password: String
 
     @Column(unique = true)
-    lateinit var mobile: String
+    var mobile: String? = null
 
     @Column(unique = true)
     var tel: String? = null
@@ -53,18 +57,35 @@ class SysUser() {
         joinColumns = [JoinColumn(name = "sys_user_id")],
         inverseJoinColumns = [JoinColumn(name = "sys_role_id")]
     )
-    var roles: List<SysRole> = ArrayList()
+    var roles: Set<SysRole> = setOf()
 
     @Column(nullable = false)
-    var createTime: Timestamp = DateUtils.getCurrentTimestamp()
+    var createTime: Date = DateUtils.getCurrentTime()
+
+    @Column(nullable = false)
+    @Temporal(TemporalType.DATE)
+    var entryDate: Date = DateUtils.getCurrentTime()
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    var status: Status = Status.NORMAL
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    var lockedStatus: LockedStatus = LockedStatus.ACTIVE
+
+    @Column(nullable = true)
+    @Temporal(TemporalType.DATE)
+    var leaveDate: Date? = null
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = true)
-    var status: Status = Status.NORMAL
+    var leaveStatus: LeaveStatus = LeaveStatus.ENTRY
+
 
     @Transient
-    fun getRoleNames(): List<String> {
-        val result = mutableListOf<String>()
+    fun getRoleNames(): Set<String> {
+        val result = mutableSetOf<String>()
         for (role in roles) {
             result.add(role.name)
         }
@@ -72,8 +93,8 @@ class SysUser() {
     }
 
     @Transient
-    fun getPermissionNames(): List<String> {
-        val result = mutableListOf<String>()
+    fun getPermissionNames(): Set<String> {
+        val result = mutableSetOf<String>()
         for (role in roles) {
             for (permission in role.permissions) result.add(permission.name)
         }

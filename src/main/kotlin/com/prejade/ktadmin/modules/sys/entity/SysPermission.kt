@@ -9,10 +9,10 @@ class SysPermission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
 
-    @Column(unique = true, nullable = false, length = 100)
+    @Column(unique = true, nullable = false)
     lateinit var name: String
 
-    @Column(unique = true, nullable = false, length = 100)
+    @Column(unique = true, nullable = false)
     lateinit var label: String
 
     @Enumerated(EnumType.STRING)
@@ -23,7 +23,7 @@ class SysPermission {
      * 权限删除后，对应的权限与角色的关系也要删除
      */
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
-    var roles: List<SysRole> = arrayListOf()
+    var roles: Set<SysRole> = setOf()
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", nullable = true)
@@ -35,5 +35,5 @@ class SysPermission {
         joinColumns = [JoinColumn(name = "sys_permission_id")],
         inverseJoinColumns = [JoinColumn(name = "sys_role_id")]
     )
-    var permissions: List<SysRole> = ArrayList()
+    var permissions: Set<SysRole> = setOf()
 }

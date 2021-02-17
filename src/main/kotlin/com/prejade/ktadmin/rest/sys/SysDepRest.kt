@@ -1,4 +1,4 @@
-package com.prejade.ktadmin.web.rest.sys
+package com.prejade.ktadmin.rest.sys
 
 import com.prejade.ktadmin.SecurityUtils
 import com.prejade.ktadmin.annotation.Log
@@ -37,6 +37,14 @@ class SysDepRest(val service: SysDepService) {
     @GetMapping("tree")
     fun tree(search: String?): HttpResult {
         return HttpResult.ok(service.tree(SecurityUtils.getLoginUser()!!.dataPermission, search))
+    }
+
+    @Log("冻结部门")
+    @PreAuthorize("@ss.hasPermission('sys:dep:edit') and @ss.hasDepPermission(#id)")
+    @DeleteMapping("{id}/status/disable")
+    fun lock(@PathVariable id: Int): Boolean {
+        service.disable(id)
+        return true
     }
 
     @Log("删除部门")

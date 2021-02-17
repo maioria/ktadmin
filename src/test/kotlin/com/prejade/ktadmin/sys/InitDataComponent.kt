@@ -1,5 +1,6 @@
 package com.prejade.ktadmin.sys
 
+import com.prejade.ktadmin.common.DateUtils
 import com.prejade.ktadmin.modules.sys.entity.SysDep
 import com.prejade.ktadmin.modules.sys.entity.SysPermission
 import com.prejade.ktadmin.modules.sys.entity.SysRole
@@ -14,14 +15,18 @@ import com.prejade.ktadmin.modules.sys.service.SysPermissionService
 import com.prejade.ktadmin.modules.sys.service.SysRoleService
 import com.prejade.ktadmin.modules.sys.service.SysUserService
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
+import java.lang.Exception
 
 @Component
+@Transactional
 class InitDataComponent(
     private var sysDepService: SysDepService,
     private var sysUserService: SysUserService,
     private var sysPermissionService: SysPermissionService,
     private var sysRoleService: SysRoleService
 ) {
+    @Transactional(rollbackFor = [Exception::class])
     fun initData() {
         val permissions = initPermission()
         val role = initRole(permissions)
@@ -53,8 +58,7 @@ class InitDataComponent(
             PermissionModel("monitor", "系统监控"),
             PermissionModel("monitor:online", "在线用户", parentName = "monitor"),
             PermissionModel("monitor:log", "操作日志", parentName = "monitor"),
-            PermissionModel("monitor:error", "异常日志", parentName = "monitor"),
-            PermissionModel("monitor:server", "服务监控", parentName = "monitor")
+            PermissionModel("monitor:error", "异常日志", parentName = "monitor")
         )
         for (item in list) {
             result.add(addPermission(item))
@@ -83,13 +87,14 @@ class InitDataComponent(
     fun initUser(depId: Int, role: SysRole): SysUser {
         val model = AddUser()
         model.username = "admin"
-        model.name = "超级管理员"
+        model.nickname = "超级管理员"
         model.depId = 1
         model.roles = "1"
         model.email = "prejade@163.com"
         model.mobile = "15666666666"
         model.depId = depId
         model.roles = role.name
+        model.entryDate = DateUtils.getCurrentTime()
         return sysUserService.add(model)
     }
 

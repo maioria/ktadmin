@@ -8,8 +8,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "attachment")
-class Attachment() {
-
+class Attachment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null
@@ -21,15 +20,11 @@ class Attachment() {
     var size: Long? = null
     var fileMd5: String? = null
     var ext: String? = null
-    var createTime: Date? = null
+    var createTime: Date? = DateUtils.getCurrentTime()
 
     @Enumerated(EnumType.STRING)
     var status: Status = Status.NORMAL
 
     @Enumerated(EnumType.STRING)
     private val type: FileType? = null
-
-    init {
-        this.createTime = DateUtils.getCurrentTime()
-    }
 }

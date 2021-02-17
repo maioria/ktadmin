@@ -1,4 +1,4 @@
-package com.prejade.ktadmin.web.rest.sys
+package com.prejade.ktadmin.rest.sys
 
 import com.prejade.ktadmin.SecurityUtils
 import com.prejade.ktadmin.annotation.Log
@@ -10,7 +10,7 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
-@ApiOperation("用户")
+@ApiOperation("用户管理")
 @RestController
 @RequestMapping("sys/user")
 class SysUserRest(val service: SysUserService) {
@@ -67,15 +67,14 @@ class SysUserRest(val service: SysUserService) {
         )
     }
 
+    @Log("重置用户密码")
     @PostMapping("resetPassword")
     fun resetPwd(userId: Int, password: String): HttpResult {
         service.resetPwd(userId, password)
         return HttpResult.ok(true)
     }
 
-    /**
-     * 删除
-     */
+    @Log("删除用户")
     @PreAuthorize("@ss.hasPermission('sys:user:edit') and @ss.hasUserPermission(#id)")
     @DeleteMapping("{id}")
     fun delete(@PathVariable id: Int): HttpResult {

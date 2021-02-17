@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface SysPermissionRepository : BaseRepository<SysPermission, Int> {
-    fun findByNameIn(names: List<String>): List<SysPermission>
+    fun findByNameIn(names: Collection<String>): Set<SysPermission>
+    fun findByName(name: String): SysPermission
 }

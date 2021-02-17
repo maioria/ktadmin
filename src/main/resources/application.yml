@@ -17,6 +17,11 @@ spring:
       ddl-auto: update
     open-in-view: true
     show-sql: true
+    #新版本的jdbc带来的时区问题，如果不加下面的会造成存储到数据库的时间早了13个小时
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Hongkong
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8

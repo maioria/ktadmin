@@ -2,6 +2,7 @@ package com.prejade.ktadmin.modules.sys.entity
 
 import com.prejade.ktadmin.common.DateUtils
 import java.sql.Timestamp
+import java.util.*
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
@@ -21,5 +22,5 @@ class SysLog {
     var address: String? = null
     var browser: String? = null
     var time: Long? = null
-    var createTime: Timestamp = DateUtils.getCurrentTimestamp()
+    var createTime: Date = DateUtils.getCurrentTime()
 }

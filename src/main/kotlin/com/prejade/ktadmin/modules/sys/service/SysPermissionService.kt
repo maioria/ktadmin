@@ -39,11 +39,11 @@ class SysPermissionService(
     }
 
     fun findByName(name: String): SysPermission {
-        return findByNames(name)[0]
+        return repository.findByName(name)
     }
 
-    fun findByNames(names: String): List<SysPermission> {
-        return repository.findByNameIn(names.split(",").toList())
+    fun findByNames(names: String): Set<SysPermission> {
+        return repository.findByNameIn(names.split(",").toSet())
     }
 
     fun upd(id: Int, model: AddPermission) {

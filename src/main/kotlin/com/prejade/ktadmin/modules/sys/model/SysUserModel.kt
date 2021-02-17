@@ -1,5 +1,8 @@
 package com.prejade.ktadmin.modules.sys.model
 
+import com.fasterxml.jackson.annotation.JsonFormat
+import java.util.*
+
 class SysUserModel {
     var id: Int? = null
     lateinit var username: String
@@ -9,15 +12,24 @@ class SysUserModel {
     var tel: String? = null
     var avatar: String? = null
     var lastLoginIp: String? = null
-    var lastLoginTime: String? = null
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    var lastLoginTime: Date? = null
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    var entryDate: Date? = null
+    var leaveStatus: String? = null
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    var leaveDate: Date? = null
     var creatorId: String? = null
     var merchantCode: String? = null
     var status: String? = null
     var statusName: String? = null
     var createTime: String? = null
-    var roles: List<String> = arrayListOf()
-    var roleLabels: List<String> = arrayListOf()
-    var permissions: List<String> = arrayListOf()
+    var roles: Set<String> = setOf()
+    var roleLabels: Set<String> = setOf()
+    var permissions: Set<String> = setOf()
     var depId: Int? = null
     var depName: String? = null
     var roleNames: String? = null
@@ -27,11 +39,14 @@ class SysUserModel {
 class AddUser {
     var id: Int? = null
     lateinit var username: String
-    lateinit var name: String
+    lateinit var nickname: String
     lateinit var mobile: String
     var email: String? = null
     var depId: Int? = null
     var tel: String? = null
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    var entryDate: Date? = null
     lateinit var roles: String
 }
 

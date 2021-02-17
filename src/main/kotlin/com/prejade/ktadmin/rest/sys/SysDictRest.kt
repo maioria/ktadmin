@@ -1,4 +1,4 @@
-package com.prejade.ktadmin.web.rest.sys
+package com.prejade.ktadmin.rest.sys
 
 import com.prejade.ktadmin.common.HttpResult
 import org.springframework.web.bind.annotation.PathVariable

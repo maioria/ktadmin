@@ -12,7 +12,7 @@ import javax.persistence.EntityManager
 @Repository
 interface SysRoleRepository : BaseRepository<SysRole, Int> {
     fun findList(orgId: Int?, of: Pageable): Page<SysRole>
-    fun findByNameIn(names: List<String>): List<SysRole>
+    fun findByNameIn(names: Collection<String>): Set<SysRole>
 }
 
 class SysRoleRepositoryImpl(private val entityManager: EntityManager) : BaseRepositoryImpl<SysRole>() {
